@@ -51,7 +51,7 @@ REST_FRAMEWORK = {
 #Some of the behaviors can be customized, the default for access token to expire is 5 minutes, I want to change it to 30 days
 from datetime import timedelta
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=30), #changed this 
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30), #changed this
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
@@ -71,7 +71,8 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
     'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
 
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',
+     'rest_framework_simplejwt.tokens.RefreshToken',), #add this, because by default, simple jwt only accept access token to log in, but bacause of the way I set up register route to generate a token using refresh token, so this line was added to accept both access token and refresh token
     'TOKEN_TYPE_CLAIM': 'token_type',
     'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
 

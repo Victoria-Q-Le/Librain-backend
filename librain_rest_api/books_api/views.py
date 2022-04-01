@@ -7,40 +7,8 @@ from .models import Book
 from django.contrib.auth.models import User
 from .serializers import BookSerializer, UserSerializer, UserSerializerWithToken
 from .books import books
-
-
-@api_view(['GET'])
-def getRoutes(request):
-    routes = [
-        '/api/books',
-        '/api/books/create',
-
-        '/api/books/upload',
-
-        '/api/books/<id>/reviews',
-
-        '/api/books/top/',
-        '/api/books/<id>/',
-
-        '/api/books/delete/<id>/',
-        '/api/books/<update>/<id>',
-    ]
-    return Response(routes)
-
-###########The Users views#################
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def getUserProfile(request):
-    user = request.user
-    serializer = UserSerializer(user, many = False)
-    return Response(serializer.data)
-
-@api_view(['GET'])
-@permission_classes([IsAdminUser])
-def getUsers(request):
-    users = User.objects.all()
-    serializer = UserSerializer(users, many = True)
-    return Response(serializer.data)
+from django.contrib.auth.hashers import make_password
+from rest_framework import status
 
 
 #############the Books views###################
@@ -74,3 +42,30 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+@api_view(['POST'])
+def registerUser(request):
+    data = request.data
+    user = User.objects.create(
+        first_name = data['name'],
+        username = data['email'],
+        email  = data['email'],
+        password = make_password(data['password'])
+    )
+    serializer = UserSerializerWithToken(user, many=False)
+    return Response(serializer.data)
+
+###########The Users views#################
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getUserProfile(request):
+    user = request.user
+    serializer = UserSerializer(user, many = False)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def getUsers(request):
+    users = User.objects.all()
+    serializer = UserSerializer(users, many = True)
+    return Response(serializer.data)
