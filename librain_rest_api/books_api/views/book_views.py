@@ -2,7 +2,6 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from books_api.models import Book
 from books_api.serializers import BookSerializer
-from books_api.books import books
 from rest_framework.decorators import api_view
 
 @api_view(['GET'])
