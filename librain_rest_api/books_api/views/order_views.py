@@ -5,6 +5,7 @@ from books_api.serializers import BookSerializer, OrderSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import status
+from datetime import datetime
 
 
 
@@ -68,3 +69,21 @@ def getOrderById(request, pk):
             Response({'detail': 'Not authorized to view this order'}, status = status.HTTP_400_BAD_REQUEST)
     except:
         return Response({'detail': 'Order is not existed'},status = status.HTTP_400_BAD_REQUEST )
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getMyOrders(request):
+    user = request.user
+    orders = user.order_set.all()
+    serializer = OrderSerializer(orders, many = True)
+    return Response(serializer.data)
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def updateOrderToPaid(request, pk):
+    order = Order.objects.get(id=pk)
+    order.isPaid = True
+    order.paidAt = datetime.now()
+    order.save()
+    return Response('Order was paid')
